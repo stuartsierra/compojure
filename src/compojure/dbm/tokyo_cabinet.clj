@@ -11,7 +11,7 @@
 ;; Implementation of the DBM interface to Tokyo Cabinet.
 
 (ns compojure.dbm.tokyo-cabinet
-  (:use compojure.dbm.spec)
+  (:use compojure.dbm)
   (:use clojure.contrib.except)
   (:import (tokyocabinet HDB FDB BDB)))
 
@@ -26,28 +26,30 @@
   [db]
   (.errmsg db (.ecode db)))
 
-(defmethod open-db :tokyo-cabinet []
-  (let [db-class (db-classes (:storage-type *dbm-repo*))
+(defmethod db-open :tokyo-cabinet
+  [repository]
+  (let [db-class (db-classes (:storage-type repository))
         db       (.newInstance db-class)
-        filename (:filename *dbm-repo*)
+        filename (:filename repository)
         success? (.open db filename write+create)]
     (if success?
-      db
+      (assoc repository :object db)
       (throwf (str "Could not open file: " (error-message db))))))
 
-(defmethod close-db :tokyo-cabinet []
-  (let [db (:object *dbm-repo*)]
+(defmethod db-close :tokyo-cabinet
+  [repository]
+  (let [db (:object repository)]
     (when-not (.close db)
       (throwf (str "Could not close file: " (error-message db))))))
 
-(defmethod fetch :tokyo-cabinet
-  [key]
-  (.get (:object *dbm-repo*) key))
+(defmethod db-fetch :tokyo-cabinet
+  [repository key]
+  (.get (:object repository) key))
 
-(defmethod store :tokyo-cabinet
-  [key value]
-  (.put (:object *dbm-repo*) key value))
+(defmethod db-store :tokyo-cabinet
+  [repository key value]
+  (.put (:object repository) key value))
 
-(defmethod delete :tokyo-cabinet
-  [key]
-  (.out (:object *dbm-repo*) key))
+(defmethod db-delete :tokyo-cabinet
+  [repository key]
+  (.out (:object repository) key))
