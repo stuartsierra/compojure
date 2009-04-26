@@ -8,7 +8,7 @@
 
 ;; compojure.dbm.tokyo-cabinet:
 ;;
-;; Implementation of the DBM interface to Tokyo Cabinet.
+;; Implementation of the compojure.dbm interface to Tokyo Cabinet.
 
 (ns compojure.dbm.tokyo-cabinet
   (:use compojure.dbm)
