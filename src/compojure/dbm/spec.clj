@@ -28,7 +28,8 @@
   [repository & body]
   `(binding [~'*dbm-repo* ~repository]
     (try
-      (open-db)
+      (set! ~'*dbm-repo*
+        (assoc ~'*dbm-repo* :object (open-db)))
       ~@body
       (finally (close-db)))))
 
