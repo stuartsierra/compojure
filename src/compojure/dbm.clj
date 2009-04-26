@@ -9,7 +9,7 @@
 ;; compojure.dbm:
 ;;
 ;; Multimethods that define a common interface to a key/value based database,
-;; such as DBM, Tokyo Cabinet, or Amazon's SimpleDB.
+;; such as JDBM or Tokyo Cabinet.
 
 (ns compojure.dbm
   (:use clojure.contrib.java-utils))
