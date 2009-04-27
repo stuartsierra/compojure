@@ -12,6 +12,7 @@
 ;; such as JDBM or Tokyo Cabinet.
 
 (ns compojure.dbm
+  (:use compojure.control)
   (:use clojure.contrib.java-utils))
 
 (defmulti db-open
@@ -40,7 +41,7 @@
 (defn fetch
   "Uses db-fetch to fetch a Clojure object from the *dbm-repo* repository."
   [key]
-  (read-string (db-fetch *dbm-repo* (as-str key))))
+  (maybe read-string (db-fetch *dbm-repo* (as-str key))))
 
 (defn store
   "Uses db-store to store a Clojure object in the *dbm-repo* repository."

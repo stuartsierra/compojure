@@ -12,49 +12,41 @@
 
 (ns compojure.dbm.jdbm
   (:use compojure.dbm)
-  (:use clojure.contrib.java-utils)
+  (:use clojure.contrib.fcase)
   (:import jdbm.RecordManager)
   (:import jdbm.RecordManagerFactory)
   (:import jdbm.htree.HTree)
   (:import jdbm.btree.BTree))
 
-(def db-classes
-  {:htree HTree, :btree BTree})
-
-(defn- invoke-static
-  "Dynamically invoke a static method on a class."
-  [class method types args]
-  (.invoke
-    (.getMethod class (as-str method) (into-array Class types))
-    class
-    (into-array Object args)))
-
 (defn- load-db
   "Load an existing database."
-  [manager class id]
-  (invoke-static class :load [RecordManager Long/TYPE] [manager id]))
+  [repository manager id]
+  (case (:storage-type repository)
+    :htree (HTree/load manager id)
+    :btree (BTree/load manager id)))
 
 (defn- create-db
   "Create a new database."
-  [manager class name]
-  (let [store (invoke-static class :createInstance [RecordManager] [manager])]
+  [repository manager name]
+  (let [store (case (:storage-type repository)
+                :htree (HTree/createInstance manager)
+                :btree (BTree/createInstance manager (:comparator repository)))]
     (.setNamedObject manager name (.getRecid store))
     store))
 
 (defn- get-db
   "Load or create the named database."
-  [manager class name]
+  [repository manager name]
   (let [id (.getNamedObject manager name)]
     (if (not= id 0)
-      (load-db manager class id)
-      (create-db manager class name))))
+      (load-db repository manager id)
+      (create-db repository manager name))))
 
 (defmethod db-open :jdbm
   [repository]
   (let [filename (:filename repository)
         manager  (RecordManagerFactory/createRecordManager filename)
-        db-class (db-classes (:storage-type repository))
-        db       (get-db manager db-class (:name repository))]
+        db       (get-db repository manager (:name repository))]
     (merge repository
       {:object  db
        :manager manager})))
