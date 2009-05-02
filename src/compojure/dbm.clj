@@ -13,8 +13,7 @@
 
 (ns compojure.dbm
   (:use compojure.control)
-  (:use compojure.repository)
-  (:use clojure.contrib.java-utils))
+  (:use compojure.repository))
 
 (defmulti db-open
   "Open a database repository identified by a map. Returns a modified map with
@@ -42,17 +41,17 @@
 (defn fetch
   "Uses db-fetch to fetch a Clojure object from the *dbm-repo* repository."
   [key]
-  (maybe read-string (db-fetch *dbm-repo* (as-str key))))
+  (maybe read-string (db-fetch *dbm-repo* (str key))))
 
 (defn store
   "Uses db-store to store a Clojure object in the *dbm-repo* repository."
   [key value]
-  (db-store *dbm-repo* (as-str key) (pr-str value)))
+  (db-store *dbm-repo* (str key) (pr-str value)))
 
 (defn delete
   "Deletes a value from the *dbm-repo* repository."
   [key]
-  (db-delete *dbm-repo* (as-str key)))
+  (db-delete *dbm-repo* (str key)))
 
 (defmacro with-db
   "Open a database repository, evaluate the body, then close the database."
