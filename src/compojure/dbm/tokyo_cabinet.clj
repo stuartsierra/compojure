@@ -12,44 +12,56 @@
 
 (ns compojure.dbm.tokyo-cabinet
   (:use compojure.dbm)
+  (:use clojure.contrib.fcase)
+  (:use clojure.contrib.def)
   (:use clojure.contrib.except)
   (:import (tokyocabinet HDB FDB BDB)))
 
-(def db-classes
-  {:bdb BDB, :fdb FDB, :hdb HDB})
+(derive ::bdb ::db)
+(derive ::fdb ::db)
+(derive ::hdb ::db)
 
-(def write+create
-  (bit-or HDB/OWRITER HDB/OCREAT))  ; OWRITER and OCREAT same for all classes
+(defvar- write+create
+  (bit-or HDB/OWRITER HDB/OCREAT)) ; OWRITER and OCREAT same for all classes
 
 (defn- error-message
   "Get the error message from the database object."
   [db]
   (.errmsg db (.ecode db)))
 
-(defmethod db-open :tokyo-cabinet
-  [repository]
-  (let [db-class (db-classes (:storage-type repository))
-        db       (.newInstance db-class)
+(defn- open-cabinet
+  "Open a new Tokyo Cabinet database given a database class like HDB."
+  [db-class repository]
+  (let [db       (.newInstance db-class)
         filename (:filename repository)
         success? (.open db filename write+create)]
     (if success?
-      (assoc repository :object db)
+      (assoc repository :db db)
       (throwf (str "Could not open file: " (error-message db))))))
 
-(defmethod db-close :tokyo-cabinet
+(defmethod db-open ::bdb [repository]
+  (open-cabinet BDB repository))
+
+(defmethod db-open ::fdb [repository]
+  (open-cabinet FDB repository))
+
+(defmethod db-open ::hdb [repository]
+  (open-cabinet HDB repository))
+
+(defmethod db-close ::db
   [repository]
-  (let [db (:object repository)]
+  (if-let [db (:db repository)]
     (when-not (.close db)
       (throwf (str "Could not close file: " (error-message db))))))
 
-(defmethod db-fetch :tokyo-cabinet
+(defmethod db-fetch ::db
   [repository key]
-  (.get (:object repository) key))
+  (.get (:db repository) key))
 
-(defmethod db-store :tokyo-cabinet
+(defmethod db-store ::db
   [repository key value]
-  (.put (:object repository) key value))
+  (.put (:db repository) key value))
 
-(defmethod db-delete :tokyo-cabinet
+(defmethod db-delete ::db
   [repository key]
-  (.out (:object repository) key))
+  (.out (:db repository) key))

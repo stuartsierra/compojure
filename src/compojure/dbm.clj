@@ -13,28 +13,29 @@
 
 (ns compojure.dbm
   (:use compojure.control)
+  (:use compojure.repository)
   (:use clojure.contrib.java-utils))
 
 (defmulti db-open
   "Open a database repository identified by a map. Returns a modified map with
   the repository connection/handle attached."
-  (fn [repository] (:type repository)))
+  (fn [repo] (use-repository repo)))
 
 (defmulti db-close
   "Close a database repository."
-  (fn [repository] (:type repository)))
+  (fn [repo] (use-repository repo)))
 
 (defmulti db-fetch
   "Use a key to retrieve a value from the repository."
-  (fn [repository key] (:type repository)))
+  (fn [repo key] (use-repository repo)))
 
 (defmulti db-store
   "Store a key and value in the repository."
-  (fn [repository key value] (:type repository)))
+  (fn [repo key val] (use-repository repo)))
 
 (defmulti db-delete
   "Delete a key and its associated value from the repository"
-  (fn [repository key] (:type repository)))
+  (fn [repo key] (use-repository repo)))
 
 (declare *dbm-repo*)
 
