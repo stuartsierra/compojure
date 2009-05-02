@@ -1,42 +1,32 @@
 (ns test.compojure.http.session
   (:use compojure.http.session)
+  (:use compojure.dbm)
   (:use clojure.contrib.test-is))
 
-;; Memory sessions
+;; Session multimethods
 
-(deftest create-memory-session
-  (binding [*session-repo* :memory]
-    (contains? (create-session) :id)))
+(defmethod db-open ::mock-dbm [rep] ::mock-dbm)
+(defmethod db-close ::mock-dbm [rep])
+(defmethod db-fetch ::mock-dbm [rep key] ":mock-value")
+(defmethod db-store ::mock-dbm [rep key val])
+(defmethod db-delete ::mock-dbm [rep key])
 
-(deftest memory-session-cookie
-  (binding [*session-repo* :memory]
-    (let [session (create-session)]
-      (is (= (session-cookie true session) (session :id)))
-      (is (nil? (session-cookie false session))))))
+(deftest create-session-has-id
+  (contains? (create-session ::mock-dbm) :id))
 
-(deftest read-memory-session
-  (binding [*session-repo* :memory
-            memory-sessions (ref {::mock-id ::mock-session})]
-    (is (= (read-session ::mock-id) ::mock-session))))
+(deftest test-session-cookie
+  (let [session (create-session ::mock-dbm)]
+    (is (= (session-cookie ::mock-dbm true session)
+           (session :id)))
+    (is (nil? (session-cookie ::mock-dbm false session)))))
 
-(deftest write-memory-session
-  (binding [*session-repo* :memory]
-    (let [session (create-session)]
-      (write-session session)
-      (is (= (memory-sessions (session :id))
-             session)))))
-
-(deftest destroy-memory-sessions
-  (let [mock-session {:id ::mock-id}]
-    (binding [*session-repo* :memory
-              memory-sessions (ref {::mock-id mock-session})]
-      (is (contains? @memory-sessions ::mock-id))
-      (destroy-session mock-session)
-      (is (not (contains? @memory-sessions ::mock-id))))))
+(deftest test-read-session
+  (is (= (read-session ::mock-dbm ::mock-id) :mock-value)))
 
 (deftest session-hmac-secret-key
-  (binding [*session-repo* {:type :cookie, :secret-key "test"}]
-    (session-hmac "foobar")
+  (let [rep {:repository :compojure.session/cookie
+             :secret-key "test"}]
+    (session-hmac rep "foobar")
     "ithiOBI7sp/MpMb9EXgxvm1gmufcQvFT+gRzIUiSd7A="))
 
 ;; Session routes
@@ -46,16 +36,16 @@
         response (handler {})]
     (is (nil? response))))
 
-(defmethod create-session ::mock []
+(defmethod create-session ::mock [rep]
   {:id ::mock-id})
 
-(defmethod write-session ::mock [session])
+(defmethod write-session ::mock [rep session])
 
-(defmethod read-session ::mock [id]
+(defmethod read-session ::mock [rep id]
   (is (= id ::mock-id))
   {:id ::mock-id})
 
-(defmethod session-cookie ::mock [new? session]
+(defmethod session-cookie ::mock [rep new? session]
   "mock-session-data")
 
 (defn- mock-session-response [response]
@@ -76,10 +66,10 @@
 
 (derive ::mock-update ::mock)
 
-(defmethod write-session ::mock-update [session]
+(defmethod write-session ::mock-update [rep session]
   (set! mock-store session))
 
-(defmethod read-session ::mock-update [id]
+(defmethod read-session ::mock-update [rep id]
   mock-store)
 
 (defn- mock-session-update [request response]
