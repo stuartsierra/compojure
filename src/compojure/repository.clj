@@ -12,12 +12,17 @@
 
 (ns compojure.repository)
 
+(defn make-repository
+  "Make a repository out of a keyword or map."
+  [repository]
+  (if (keyword? repository)
+    {:repository repository}
+    repository))
+
 (defn repository-type
   "Return the type of the repository."
   [repository]
-  (if (keyword? repository)
-    repository
-    (:repository repository)))
+  (:repository (make-repository repository)))
 
 (defn require-repository
   "Require the namespace of a respository."

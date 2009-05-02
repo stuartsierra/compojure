@@ -56,7 +56,7 @@
 (defmacro with-db
   "Open a database repository, evaluate the body, then close the database."
   [repository & body]
-  `(binding [~'*dbm-repo* ~repository]
+  `(binding [~'*dbm-repo* (make-repository ~repository)]
     (try
       (set! ~'*dbm-repo* (db-open ~'*dbm-repo*))
       ~@body
