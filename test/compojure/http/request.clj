@@ -1,6 +1,6 @@
 (ns test.compojure.http.request
   (:use compojure.http.request)
-  (:use clojure.contrib.test-is)
+  (:use clojure.test)
   (:use test.helpers))
 
 (deftest query-params

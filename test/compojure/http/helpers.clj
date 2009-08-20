@@ -2,7 +2,7 @@
   (:use compojure.http.helpers)
   (:use compojure.http.routes)
   (:use compojure.control)
-  (:use clojure.contrib.test-is))
+  (:use clojure.test))
 
 (deftest test-set-cookie
   (is (= (set-cookie :foo "bar")

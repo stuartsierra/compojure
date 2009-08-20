@@ -1,7 +1,7 @@
 (ns test.compojure.validation
   (:use compojure.html.form-helpers)
   (:use compojure.validation)
-  (:use clojure.contrib.test-is))
+  (:use clojure.test))
 
 (deftest passes-validate
   (is (= (validate {:a 1} :a (constantly true) "fail")

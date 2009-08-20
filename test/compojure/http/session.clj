@@ -2,7 +2,7 @@
   (:use compojure.crypto)
   (:use compojure.encodings)
   (:use compojure.http.session)
-  (:use clojure.contrib.test-is)
+  (:use clojure.test)
   (:import javax.crypto.spec.IvParameterSpec)
   (:import javax.crypto.spec.SecretKeySpec))
 

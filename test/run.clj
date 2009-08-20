@@ -1,5 +1,5 @@
 (ns test.run
-  (:use clojure.contrib.test-is)
+  (:use clojure.test)
   (:require test.compojure.crypto)
   (:require test.compojure.html.gen)
   (:require test.compojure.html.form-helpers)

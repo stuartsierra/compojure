@@ -1,6 +1,6 @@
 (ns test.compojure.http.routes
   (:use compojure.http.routes)
-  (:use clojure.contrib.test-is)
+  (:use clojure.test)
   (:use test.helpers))
 
 (deftest fixed-path

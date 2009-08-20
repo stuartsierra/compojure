@@ -1,6 +1,6 @@
 (ns test.compojure.html.form-helpers
   (:use compojure.html.form-helpers)
-  (:use clojure.contrib.test-is))
+  (:use clojure.test))
 
 (defn attribute
   "Get an attribute from a tag vector."

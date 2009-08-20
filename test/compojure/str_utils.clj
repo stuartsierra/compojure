@@ -1,6 +1,6 @@
 (ns test.compojure.str-utils
   (:use compojure.str-utils)
-  (:use clojure.contrib.test-is))
+  (:use clojure.test))
 
 (deftest test-escape
   (is (= (escape "aeiou" "hello world")

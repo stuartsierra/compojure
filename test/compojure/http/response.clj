@@ -1,6 +1,6 @@
 (ns test.compojure.http.response
   (:use compojure.http.response)
-  (:use clojure.contrib.test-is))
+  (:use clojure.test))
 
 (deftest nil-response
   (is (= (create-response {} nil)
