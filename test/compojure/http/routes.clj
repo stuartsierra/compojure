@@ -4,7 +4,7 @@
   (:use test.helpers))
 
 (deftest fixed-path
-  (are (match-uri (compile-uri-matcher _1) _1)
+  (are [_1] (match-uri (compile-uri-matcher _1) _1)
     "/"
     "/foo"
     "/foo/bar"
@@ -14,29 +14,29 @@
   (is (match-uri (compile-uri-matcher "/") nil)))
 
 (deftest keyword-paths
-  (are (= (match-uri (compile-uri-matcher _1) _2) _3)
+  (are [_1 _2 _3] (= (match-uri (compile-uri-matcher _1) _2) _3)
     "/:x"       "/foo"     {:x "foo"}
     "/foo/:x"   "/foo/bar" {:x "bar"}
     "/a/b/:c"   "/a/b/c"   {:c "c"}
     "/:a/b/:c"  "/a/b/c"   {:a "a", :c "c"}))
 
 (deftest keywords-match-extensions
-  (are (= (match-uri (compile-uri-matcher _1) _2) _3)
+  (are [_1 _2 _3] (= (match-uri (compile-uri-matcher _1) _2) _3)
     "/foo.:ext" "/foo.txt" {:ext "txt"}
     "/:x.:y"    "/foo.txt" {:x "foo", :y "txt"}))
 
 (deftest hyphen-keywords
-  (are (= (match-uri (compile-uri-matcher _1) _2) _3)
+  (are [_1 _2 _3] (= (match-uri (compile-uri-matcher _1) _2) _3)
     "/:foo-bar" "/baz" {:foo-bar "baz"}
     "/:foo-"    "/baz" {:foo- "baz"}))
 
 (deftest same-keyword-many-times
-  (are (= (match-uri (compile-uri-matcher _1) _2) _3)
+  (are [_1 _2 _3] (= (match-uri (compile-uri-matcher _1) _2) _3)
     "/:x/:x/:x" "/a/b/c" {:x ["a" "b" "c"]}
     "/:x/b/:x"  "/a/b/c" {:x ["a" "c"]}))
 
 (deftest wildcard-paths
-  (are (= (match-uri (compile-uri-matcher _1) _2) _3)
+  (are [_1 _2 _3] (= (match-uri (compile-uri-matcher _1) _2) _3)
     "/*"     "/foo"         {:* "foo"}
     "/*"     "/foo.txt"     {:* "foo.txt"}
     "/*"     "/foo/bar"     {:* "foo/bar"}
@@ -60,7 +60,7 @@
   (is (not (match-uri  #"/[A-Z][a-z]" "/ab"))))
 
 (deftest regex-path-params
-  (are (= (match-uri _1 _2) _3)
+  (are [_1 _2 _3] (= (match-uri _1 _2) _3)
     #"/foo/(\w+)"   "/foo/bar" ["bar"]
     #"/(\w+)/(\d+)" "/foo/10"  ["foo" "10"]))
 
@@ -85,7 +85,7 @@
   (:body (route {:request-method method, :uri uri})))
 
 (deftest route-methods
-  (are (= (route-body _1 _2 "/") _3)
+  (are [_1 _2 _3] (= (route-body _1 _2 "/") _3)
     (GET    "/" "a") :get    "a"
     (POST   "/" "b") :post   "b"
     (PUT    "/" "c") :put    "c"
@@ -93,7 +93,7 @@
     (DELETE "/" "e") :delete "e"))
 
 (deftest route-any
-  (are (= (route-body (ANY "/" _2) _1 "/") _2)
+  (are [_1 _2 _3] (= (route-body (ANY "/" _2) _1 "/") _2)
     :get    "a"
     :post   "b"
     :put    "c"

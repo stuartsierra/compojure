@@ -60,7 +60,7 @@
     (= (:body response) "foo")))
 
 (deftest test-ignore-trailing-slash-paths
-  (are (run-ignore-trailing-slash-paths _1 _2)
+  (are [_1 _2] (run-ignore-trailing-slash-paths _1 _2)
        "/" "/"
        "/foo" "/foo"
        "/foo" "/foo/"
@@ -75,13 +75,13 @@
     (= (:body response) "foo")))
 
 (deftest test-with-context
-  (are (run-with-context _1 _2 "/context")
+  (are [_1 _2] (run-with-context _1 _2 "/context")
        "/" "/context"
        "/home" "/context/home"
        "/asset/1" "/context/asset/1"))
 
 (deftest test-without-context
-  (are (not (run-with-context _1 _2 "/context"))
+  (are [_1 _2] (not (run-with-context _1 _2 "/context"))
        "/" "/"
        "/home" "/home"
        "/asset/1" "/asset/1"))
@@ -96,7 +96,7 @@
     (= type result)))
 
 (deftest test-with-default-mimetypes
-  (are (run-mimetypes _1 _2 {})
+  (are [_1 _2] (run-mimetypes _1 _2 {})
        "/" "text/html"
        "/foobar" "text/html"
        "/file.pdf" "application/pdf"
@@ -106,7 +106,7 @@
   (let [options {:mimetypes {"foo" "test/foo"
                              "bar" "test/bar"}
                  :default "test/default"}]
-    (are (run-mimetypes _1 _2 options)
+    (are [_1 _2] (run-mimetypes _1 _2 options)
          "/" "test/default"
          "/foobar" "test/default"
          "/file.pdf" "test/default"

@@ -3,7 +3,7 @@
   (:use clojure.test))
 
 (deftest secret-key-length
-  (are (= (count (gen-secret-key {:key-size _1})) _2)
+  (are [_1 _2] (= (count (gen-secret-key {:key-size _1})) _2)
     256 32
     128 16))
 
@@ -24,7 +24,7 @@
     (is (not= a b))))
 
 (deftest seal-then-unseal
-  (are (= (unseal secret-key (seal secret-key _1)) _1)
+  (are [_1 _2] (= (unseal secret-key (seal secret-key _1)) _1)
     "Foobar"
     [1 2 3]
     {:a 10}))

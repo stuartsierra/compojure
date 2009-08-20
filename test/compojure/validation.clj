@@ -22,7 +22,7 @@
            (text-field :foo)))))
 
 (deftest merge-errors-test
-  (are (= (apply merge-errors _1) _2)
+  (are [_1 _2] (= (apply merge-errors _1) _2)
     [{}]                     {}
     [{} {} {}]               {}
     [{:a ["f"]}]             {:a ["f"]}

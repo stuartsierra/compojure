@@ -4,7 +4,7 @@
   (:use test.helpers))
 
 (deftest query-params
-  (are (= (parse-query-params {:query-string _1}) _2)
+  (are [_1 _2] (= (parse-query-params {:query-string _1}) _2)
     "a=1"     {:a "1"}
     "a=1&b=2" {:a "1", :b "2"}))
 
@@ -21,7 +21,7 @@
         {:content-type "application/x-www-form-urlencoded; charset=UTF8"})))
 
 (deftest form-params
-  (are (= (parse-form-params (form-request _1)) _2)
+  (are [_1 _2] (= (parse-form-params (form-request _1)) _2)
     "a=1"     {:a "1"}
     "a=1&b=2" {:a "1", :b "2"}))
 
